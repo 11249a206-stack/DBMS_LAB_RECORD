@@ -1,0 +1,72 @@
+SQL*Plus: Release 11.2.0.1.0 Production on Mon Aug 10 11:04:17 2026
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+Enter user-name: A206@db2021
+Enter password:
+
+Connected to:
+Oracle Database 11g Release 11.2.0.1.0 - Production
+SQL> create table student(regno varchar2(10),stuname varchar2(30),DOB date,sex char(1),dept char(10));
+
+Table created.
+
+SQL> insert into student values('11249A206','pramodh','30-apr-2007','m','cse');
+
+1 row created.
+
+SQL> desc student;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REGNO                                              VARCHAR2(10)
+ STUNAME                                            VARCHAR2(30)
+ DOB                                                DATE
+ SEX                                                CHAR(1)
+ DEPT                                               CHAR(10)
+
+SQL> select * from student;
+
+REGNO      STUNAME                        DOB       S DEPT
+---------- ------------------------------ --------- - ----------
+11249A206  pramodh                        30-APR-07 m cse
+
+SQL> alter table student add constraint stu_pk primary key(regno);
+
+Table altered.
+SQL> alter table student add constraint stu_fk foreign key(regno)references student(regno);
+
+Table altered.
+SQL> alter table student add constraint stu_chk check(DOB>DATE'2000-01-01' and DOB<DATE'2030-01-01');
+
+Table altered.
+
+SQL> alter table student add constraint stu_un unique(sex);
+
+Table altered.
+
+SQL> alter table student modify stuname constraint stu_ntnull not null;
+
+Table altered.
+SQL> alter table student modify dept default 'CSE';
+
+Table altered.
+
+SQL> desc student;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REGNO                                     NOT NULL VARCHAR2(10)
+ STUNAME                                   NOT NULL VARCHAR2(30)
+ DOB                                                DATE
+ SEX                                                CHAR(1)
+ DEPT                                               CHAR(10)
+
+SQL> select * from student;
+
+REGNO      STUNAME                        DOB       S DEPT
+---------- ------------------------------ --------- - ----------
+11249A206  pramodh                        30-APR-07 m cse
+
+SQL> drop table student;
+
+Table dropped.
+

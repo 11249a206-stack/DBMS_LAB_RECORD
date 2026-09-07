@@ -1,0 +1,171 @@
+SQL*Plus: Release 11.2.0.1.0 Production on Mon Sep 7 10:17:45 2026
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+Enter user-name: A206@db2021
+Enter password:
+
+Connected to:
+Oracle Database 11g Release 11.2.0.1.0 - Production
+SQL> create table department (
+  2  dept_id number(3) primary key,
+  3  dept_name varchar2(30)
+  4  );
+
+Table created.
+
+SQL> insert into department values(206,'cse');
+
+1 row created.
+
+SQL> insert into department values(232,'mech');
+
+1 row created.
+
+SQL> insert into department values(228,'civil');
+
+1 row created.
+
+SQL> insert into department values(111,'ece');
+
+1 row created.
+
+SQL> insert into department values(116,'it');
+
+1 row created.
+
+SQL> drop table student;
+
+Table dropped.
+
+SQL> create table student (
+  2  student_id number(5) primary key,
+  3  student_name varchar2(30),
+  4  marks number(3),
+  5  dept_id number(3),
+  6  constraint fk_dept foreign key (dept_id)
+  7  references department(dept_id)
+  8  );
+
+Table created.
+
+SQL> insert into student values(206,'pramodh',97,206);
+
+1 row created.
+
+SQL> insert into student values(228,'monish',93,228);
+
+1 row created.
+
+SQL> insert into student values(232,'likith',93,232);
+
+1 row created.
+
+SQL> select s.student_id,s.student_name,d.dept_name
+  2  from student s
+  3  inner join department d
+  4  on s.dept_id = d.dept_id;
+
+STUDENT_ID STUDENT_NAME                   DEPT_NAME
+---------- ------------------------------ ------------------------------
+       206 pramodh                        cse
+       228 monish                         civil
+       232 likith                         mech
+
+SQL> select s.student_name,d.dept_name
+  2  from student s
+  3  left outer join department d
+  4  on s.dept_id = d.dept_id;
+
+STUDENT_NAME                   DEPT_NAME
+------------------------------ ------------------------------
+pramodh                        cse
+monish                         civil
+likith                         mech
+
+SQL> select s.student_name,d.dept_name
+  2  from student s
+  3  right outer join department d
+  4  on s.dept_id = d.dept_id;
+
+STUDENT_NAME                   DEPT_NAME
+------------------------------ ------------------------------
+pramodh                        cse
+monish                         civil
+likith                         mech
+
+SQL> select s.student_name,d.dept_name
+  2  from student s
+  3  full outer join department d
+  4  on s.dept_id = d.dept_id;
+
+STUDENT_NAME                   DEPT_NAME
+------------------------------ ------------------------------
+pramodh                        cse
+likith                         mech
+monish                         civil
+
+SQL> create table employee (
+  2  EMP_ID NUMBER(5) PRIMARY KEY,
+  3   EMP_NAME VARCHAR2(30),
+  4   MANAGER_ID NUMBER(5)
+  5  );
+
+Table created.
+
+SQL> insert into employee values (1,'yash',null);
+
+1 row created.
+
+SQL> insert into employee values (2,'arjun',1);
+
+1 row created.
+
+SQL> SELECT E.EMP_NAME EMPLOYEE, M.EMP_NAME MANAGER
+  2  FROM EMPLOYEE E
+  3  LEFT JOIN EMPLOYEE M
+  4   ON E.MANAGER_ID = M.EMP_ID;
+
+EMPLOYEE                       MANAGER
+------------------------------ ------------------------------
+yash
+arjun                          yash
+
+SQL> SELECT STUDENT_NAME, MARKS
+  2  FROM STUDENT
+  3  WHERE MARKS >
+  4  (
+  5   SELECT AVG(MARKS)
+  6   FROM STUDENT
+  7  );
+
+STUDENT_NAME                        MARKS
+------------------------------ ----------
+pramodh                                97
+
+SQL> SELECT STUDENT_NAME
+  2  FROM STUDENT
+  3  WHERE DEPT_ID IN
+  4  (
+  5   SELECT DEPT_ID
+  6   FROM DEPARTMENT
+  7   WHERE DEPT_NAME = 'CSE'
+  8  );
+
+no rows selected
+
+SQL> SELECT STUDENT_NAME, MARKS, DEPT_ID
+  2  FROM STUDENT S1
+  3  WHERE MARKS =
+  4  (
+  5   SELECT MAX(MARKS)
+  6   FROM STUDENT S2
+  7   WHERE S1.DEPT_ID = S2.DEPT_ID
+  8  );
+
+STUDENT_NAME                        MARKS    DEPT_ID
+------------------------------ ---------- ----------
+pramodh                                97        206
+monish                                 93        228
+likith                                 93        232
+

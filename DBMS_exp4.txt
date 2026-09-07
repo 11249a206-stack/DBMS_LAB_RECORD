@@ -1,0 +1,155 @@
+SQL*Plus: Release 11.2.0.1.0 Production on Mon Sep 7 10:17:45 2026
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+Enter user-name: A206@db2021
+Enter password:
+
+Connected to:
+Oracle Database 11g Release 11.2.0.1.0 - Production
+
+SQL> create table student (
+  2  student_id number(5) primary key,
+  3  student_name varchar2(30),
+  4  department varchar2(20),
+  5  marks number(3)
+  6  );
+
+Table created.
+
+SQL> insert into student values (206,'pramodh','cse',97);
+
+1 row created.
+
+SQL> insert into student values (228,'monish','cse',93);
+
+1 row created.
+
+SQL> insert into student values (232,'likith','cse'90);
+insert into student values (232,'likith','cse'90)
+                                              *
+ERROR at line 1:
+ORA-00917: missing comma
+
+
+SQL> insert into student values (232,'likith','cse',90);
+
+1 row created.
+
+SQL> select count(*) as total_students
+  2  from student;
+
+TOTAL_STUDENTS
+--------------
+             3
+
+SQL> select sum(marks)as total_marks
+  2  from student;
+
+TOTAL_MARKS
+-----------
+        280
+
+SQL> select avg(marks)as average_marks
+  2  from student;
+
+AVERAGE_MARKS
+-------------
+   93.3333333
+
+SQL> select max(marks) as highest_mark
+  2  from student;
+
+HIGHEST_MARK
+------------
+          97
+
+SQL> select min(marks) as lowest_mark
+  2  from student;
+
+LOWEST_MARK
+-----------
+         90
+
+SQL> select department,avg(marks) as avg_marks
+  2  from student
+  3  group by department;
+
+DEPARTMENT            AVG_MARKS
+-------------------- ----------
+cse                  93.3333333
+
+SQL> select department,count(*) as total_students
+  2  from student
+  3  group by department;
+
+DEPARTMENT           TOTAL_STUDENTS
+-------------------- --------------
+cse                               3
+
+SQL> select department,max(marks) as max_marks
+  2  from student group by department;
+
+DEPARTMENT            MAX_MARKS
+-------------------- ----------
+cse                          97
+
+SQL> select department,avg(marks) as avg_marks
+  2  from student group by department
+  3  having avg =>90;
+having avg =>90
+           *
+ERROR at line 3:
+ORA-00920: invalid relational operator
+
+
+SQL> select department,avg(marks) as avg_marks
+  2  from student group by department
+  3  having avg >90;
+having avg >90
+       *
+ERROR at line 3:
+ORA-00904: "AVG": invalid identifier
+
+
+SQL> select department,avg(marks) as avg_marks
+  2  from student group by department
+  3  having avg(marks) =>90;
+having avg(marks) =>90
+                  *
+ERROR at line 3:
+ORA-00920: invalid relational operator
+
+
+SQL> select department,avg(marks) as avg_marks
+  2  from student group by department
+  3  having avg(marks) >90;
+
+DEPARTMENT            AVG_MARKS
+-------------------- ----------
+cse                  93.3333333
+
+SQL> select department,count(*)as total_students
+  2  from student group by department
+  3  having count(*)>1;
+
+DEPARTMENT           TOTAL_STUDENTS
+-------------------- --------------
+cse                               3
+
+SQL> select department,count(*) as no_of_students,
+  2  avg(marks) as avg_marks,max(marks)as highest_mark
+  3  from student group by department
+  4  having avg(marks)>87;
+
+DEPARTMENT           NO_OF_STUDENTS  AVG_MARKS HIGHEST_MARK
+-------------------- -------------- ---------- ------------
+cse                               3 93.3333333           97
+
+SQL> select* from student;
+
+STUDENT_ID STUDENT_NAME                   DEPARTMENT                MARKS
+---------- ------------------------------ -------------------- ----------
+       206 pramodh                        cse                          97
+       228 monish                         cse                          93
+       232 likith                         cse                          90

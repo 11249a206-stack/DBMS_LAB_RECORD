@@ -1,0 +1,293 @@
+Enter user-name: A206@db2021
+Enter password:
+
+Connected to:
+Oracle Database 11g Release 11.2.0.1.0 - Production
+
+SQL> select * from tab;
+
+TNAME                          TABTYPE  CLUSTERID
+------------------------------ ------- ----------
+STUDENTS                       TABLE
+STUDENT5                       TABLE
+STUDENT4                       TABLE
+STUDENT3                       TABLE
+STUDENT2                       TABLE
+STUDENT1                       TABLE
+STUDENT                        TABLE
+STU3                           TABLE
+STU2                           TABLE
+STU1                           TABLE
+MARKS                          TABLE
+
+TNAME                          TABTYPE  CLUSTERID
+------------------------------ ------- ----------
+DEPARTMENT2                    TABLE
+DEPARTMENT1                    TABLE
+DEPARTMENT                     TABLE
+CSE_STUDENTS                   VIEW
+ALUMNI                         TABLE
+
+17 rows selected.
+
+SQL> select * from student4;
+
+REGNO      NAME                      DEPT_NAM      MARKS
+---------- ------------------------- -------- ----------
+A206       pramodh                      cse              90
+A121       sriyansh                     cse              91
+A196       siyadh                       ece              98
+A198       avyansh                      it               88
+A201       ravi                         ece              81
+
+SQL> set serveroutput on;
+SQL> declare
+  2    v_name student4.name%type;
+  3  begin
+  4     select name
+  5     into v_name
+  6     from student4;
+  7     dbms_output.put_line(v_name);
+  8  exception
+  9     when too_many_rows then
+ 10     dbms_output.put_line('Error : Query returned multiple rows.');
+ 11  END;
+ 12  /
+Error : Query returned multiple rows.
+
+PL/SQL procedure successfully completed.
+
+
+SQL> set serveroutput on;
+SQL> begin
+  2     insert into student4 (regno,name) values(201,'bala');
+  3  exception
+  4     when dup_val_on_index then
+  5     dbms_output.put_line('Error :Duplicate value violates unique constraint.');
+  6  END;
+  7  /
+
+PL/SQL procedure successfully completed.
+
+SQL> desc student4;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REGNO                                              CHAR(10)
+ NAME                                               VARCHAR2(25)
+ DEPT_NAME                                          CHAR(8)
+ MARKS                                              NUMBER(3)
+
+
+SQL> desc students;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REGNO                                     NOT NULL CHAR(10)
+ NAME                                               VARCHAR2(40)
+ DOB                                                DATE
+ COURSENAME                                NOT NULL CHAR(5)
+ DEPTNAME                                           CHAR(10)
+ YEAR                                               NUMBER
+ AGE                                                NUMBER(3)
+
+SQL> select * from students;
+
+REGNO      NAME                                     DOB       COURS DEPTNAME
+---------- ---------------------------------------- --------- ----- ----------
+      YEAR        AGE
+---------- ----------
+198        avya                                     09-JAN-06 BE    chemistry
+         3         20
+
+111        kiaan                                    08-MAR-07 bba   cse
+         3         19
+
+122        a                                        09-FEB-07 BSAC  llb
+         2         19
+
+
+
+SQL>  set serveroutput on;
+SQL>  begin
+  2       insert into students(regno,name,coursename) values(111,'bala','cse');
+  3   exception
+  4       when dup_val_on_index then
+  5         dbms_output.put_line('Error: Duplicate value violates unique constraint.');
+  6  end;
+  7  /
+Error: Duplicate value violates unique constraint.
+
+PL/SQL procedure successfully completed.
+
+
+SQL>  set serveroutput on;
+SQL> declare
+  2     v_num number(2);
+  3  begin
+  4     v_num:=12345;
+  5  exception
+  6      when value_error then
+  7          dbms_output.put_line('Error:value exceeds variable size.');
+  8  end;
+  9  /
+Error:value exceeds variable size.
+
+PL/SQL procedure successfully completed.
+
+SQL>  set serveroutput on;
+SQL> declare
+  2     v_num number;
+  3  begin
+  4     v_num :=10/0;
+  5  exception
+  6     when others then
+  7          dbms_output.put_line('SQLCODE:' || SQLCODE);
+  8          dbms_output.put_line('SQLERRM:' || SQLERRM);
+  9  end;
+ 10  /
+SQLCODE:-1476
+SQLERRM:ORA-01476: divisor is equal to zero
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from student4;
+
+REGNO      NAME                      DEPT_NAM      MARKS
+---------- ------------------------- -------- ----------
+A181       siri                      cse              90
+A182       sriya                     cse              91
+201        bala
+A190       siya                      ece              98
+A198       avya                      it               88
+201        ravi                      ece              81
+
+6 rows selected.
+
+SQL> create table students4
+  2  (   regno number(8) primary key,
+  3      name  varchar2(30),
+  4      marks number(3)
+  5  );
+
+Table created.
+
+SQL> insert into students4 values(101,'avya',89);
+
+1 row created.
+
+SQL> insert into students4 values(102,'kiaan',72);
+
+1 row created.
+
+SQL> insert into students4 values(103,'anya',92);
+
+1 row created.
+
+SQL> CREATE OR REPLACE PROCEDURE get_students4
+  2  (
+  3      p_regno IN NUMBER
+  4  )
+  5  IS
+  6      v_name students4.name%TYPE;
+  7      v_marks students4.marks%TYPE;
+  8  BEGIN
+  9      SELECT name, marks
+ 10      INTO v_name, v_marks
+ 11      FROM students4
+ 12      WHERE regno = p_regno;
+ 13      DBMS_OUTPUT.PUT_LINE('student name: ' || v_name);
+ 14      DBMS_OUTPUT.PUT_LINE('Marks: ' || v_marks);
+ 15  EXCEPTION
+ 16      WHEN NO_DATA_FOUND THEN
+ 17          DBMS_OUTPUT.PUT_LINE('Student record not found.');
+ 18  end;
+ 19  /
+
+Procedure created.
+
+SQL> set serveroutput on;
+SQL> exec get_students4(101);
+student name: avya
+Marks: 89
+
+PL/SQL procedure successfully completed.
+
+SQL> exec get_students4(110);
+Student record not found.
+
+PL/SQL procedure successfully completed.
+
+SQL> create or replace function find_grade
+  2  (
+  3     P_marks number
+  4  )
+  5  return varchar2
+  6  is
+  7      v_grade varchar2(2);
+  8  begin
+  9      IF P_MARKS >= 90 THEN
+ 10   V_GRADE := 'O';
+ 11   ELSIF P_MARKS >= 80 THEN
+ 12   V_GRADE := 'A+';
+ 13   ELSIF P_MARKS >= 70 THEN
+ 14   V_GRADE := 'A';
+ 15   ELSIF P_MARKS >= 60 THEN
+ 16   V_GRADE := 'B';
+ 17   ELSE
+ 18   V_GRADE := 'C';
+ 19   END IF;
+ 20   RETURN V_GRADE;
+ 21  END;
+ 22  /
+
+Function created.
+
+SQL> select find_grade(91) as grade from dual;
+
+GRADE
+--------------------------------------------------------------------------------
+O
+
+SQL> select find_grade(89) as grade from dual;
+
+GRADE
+--------------------------------------------------------------------------------
+A+
+
+SQL> select regno,name,marks,find_grade(marks) as grade from students4;
+
+     REGNO NAME                                MARKS
+---------- ------------------------------ ----------
+GRADE
+--------------------------------------------------------------------------------
+       101 avya                                   89
+A+
+
+       102 kiaan                                  72
+A
+
+       103 anya                                   92
+O
+
+
+
+SQL> SELECT OBJECT_NAME,OBJECT_TYPE FROM USER_OBJECTS WHERE OBJECT_TYPE='PROCEDURE';
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+OBJECT_TYPE
+-------------------
+GET_STUDENTS4
+PROCEDURE
+
+
+SQL> SELECT OBJECT_NAME,OBJECT_TYPE FROM USER_OBJECTS WHERE OBJECT_TYPE='FUNCTION';
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+OBJECT_TYPE
+-------------------
+FIND_GRADE
+FUNCTION
+
+
+SQL>
